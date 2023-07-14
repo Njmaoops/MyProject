@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog_system_ssm.mapper.UserMapper">
+
+    <insert id="addUser">
+        insert into userinfo(username, password)
+        values (#{username}, #{password})
+    </insert>
+    <update id="freezeUserInfo">
+        update userinfo
+        set state = -1
+        where id = #{id}
+    </update>
+    <update id="clearError">
+        update userinfo
+        set errorcount = 0
+        where id = #{id}
+    </update>
+    <update id="upError">
+        update userinfo
+        set errorcount = errorcount + 1
+        where id = #{id}
+    </update>
+    <update id="changePassword">
+        update userinfo
+        set password = #{password}
+        where id = #{id}
+    </update>
+    <update id="changeNickName">
+        update userinfo
+        set nickname = #{nickname}
+        where id = #{id}
+    </update>
+    <update id="setSecurityInfo">
+        update userinfo
+        set securityquestion = #{securityQuestion},
+            securityanswer   = #{securityAnswer}
+        where id = #{id}
+    </update>
+    <update id="setAllInfo">
+        update userinfo
+        set securityquestion = #{securityquestion},
+            securityanswer   = #{securityanswer},
+            nickname         = #{nickname},
+            password         = #{password}
+        where id = #{id}
+    </update>
+    <update id="setPasswordById">
+        update userinfo
+        set password = #{password}
+        where id = #{id}
+    </update>
+    <select id="getUserByName" resultType="com.example.blog_system_ssm.entity.UserInfo">
+        select *
+        from userinfo
+        where username = #{username}
+    </select>
+    <select id="getUserById" resultType="com.example.blog_system_ssm.entity.UserInfo">
+        select *
+        from userinfo
+        where id = #{id}
+    </select>
+    <select id="getUserBySecurityQuestion" resultType="com.example.blog_system_ssm.entity.UserInfo">
+        select *
+        from userinfo
+        where securityquestion = #{securityquestion}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登陆界面</title>
+    <link rel="stylesheet" href="css/commen.css">
+    <link rel="stylesheet" href="css/blog_login.css">
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+<!-- 导航栏 -->
+<div class="nav">
+    <img src="image/head.png" alt="">
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="reg.html">注册</a>
+    <a href="blog_list.html">主页</a>
+    <a href="blog_edit.html">写博客</a>
+</div>
+<div class="login-container">
+    <!-- 白色登录界面 -->
+    <div class="login-dialog">
+        <div>
+            <h3>登录</h3>
+            <div class="row">
+                <span>用户名</span>
+                <input type="text" id="userName" value="admin">
+            </div>
+            <div class="row">
+                <span>密码 </span>
+                <input type="password" id="passWd" value="123456">
+            </div>
+            <div class="row">
+                <span>验证码</span>
+                <input type="text" id="captchaCode">
+                <!--                验证码-->
+                <div>
+                    <a href="javascript:getCaptcha()" id="Captcha">
+
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <button id="submit" onclick="mysub()"> 提交</button>
+                <div class="space"></div>
+                <button id="reg" onclick="location.href ='reg.html'"> 注册</button>
+            </div>
+            <div class="row">
+                <a href="reset_newPwd.html" id="findPwd">已有账号,忘记密码?</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function mysub() {
+            var username = jQuery("#userName");
+            var password = jQuery("#passWd");
+            // 验证码
+            var captchaCode = jQuery("#captchaCode");
+            if (username.val() === "") {
+                alert("先输入用户名");
+                username.focus();
+                return;
+            }
+            if (password.val() === "") {
+                alert("先输入密码");
+                password.focus();
+                return;
+            }
+            if (captchaCode.val() === "") {
+                alert("先输入验证码");
+                captchaCode.focus();
+                return;
+            }
+            // 非空校验完 进行 Ajax 的提交
+            jQuery.ajax({
+                url: "user/login",
+                type: "POST",
+                data: {
+                    "username": username.val(),
+                    "password": password.val(),
+                    "captchaCode": captchaCode.val()
+                },
+                // 成功之后得结果
+                success: function (result) {
+                    if (result != null) {
+                        if (result.code === 200 && result.data !== null) {
+                            // 说明可以直接跳转到我的文章管理页面
+                            location.href = "myblog_list.html";
+                        } else if (result.code === 0) {
+                            alert(result.msg);
+                            location.href = location.href;
+                        } else if (result.code === -5) {
+                            // 说明验证码错误
+                            alert(result.msg);
+                            location.href = location.href;
+                        }
+                    } else {
+                        alert("不存在此用户或者用户密码错误")
+                    }
+                }
+            });
+        }
+
+        function getCaptcha() {
+            jQuery.ajax({
+                url: "/user/getcaptcha",
+                type: "POST",
+                data: {},
+                success: function (result) {
+                    jQuery("#Captcha").html('<img src="data:image/png;base64,' + result.data + '">');
+                }
+            });
+        }
+
+        getCaptcha();
+    </script>
+</div>
+</body>
+</html>

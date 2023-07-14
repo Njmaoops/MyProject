@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客系统</title>
+</head>
+<link href="css/commen.css" rel="stylesheet">
+<link rel="stylesheet" href="css/blog_list.css">
+<body>
+<!-- 导航栏 -->
+<div class="nav">
+    <a href="my_information.html">
+        <img src="image/head.png" alt="">
+    </a>
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="blog_list.html">主页</a>
+    <a href="blog_add.html">写博客</a>
+    <!--        发送一个 注销请求 , 将会话删掉
+            请求 : GET /logout
+            响应 HTTP/1.1 302 Location: blog_login.html-->
+    <a href="javascript: logout()">注销</a>
+</div>
+<!-- .container 作为页面的版心 -->
+<div class="container">
+    <div class="left">
+        <!-- 表示左侧的用户信息区域 -->
+        <div class="card">
+            <img src="image/head2.png" alt="">
+            <h3 id="nickName"></h3>
+            <a href="https://gitee.com/zhang-haoxiang135">github 地址</a>
+            <div class="counter">
+                <span>文章</span>
+                <span>分类</span>
+            </div>
+            <div class="counter">
+                <span id="articleCount"></span>
+                <span>2</span>
+            </div>
+        </div>
+    </div>
+    <div class="right" id="artDiv">
+
+    </div>
+</div>
+<!--script-->
+<script src="js/jquery.min.js"></script>
+<script>
+    function showInfo() {
+        jQuery.ajax({
+            url: "/user/showinfo",
+            type: "POST",
+            data: {},
+            success: function (result) {
+                if (result != null && result.code == 200) {
+                    // 说明登录成功
+                    jQuery("#nickName").text(result.data.nickname);
+                    jQuery("#articleCount").text(result.data.articleCount);
+                } else {
+                    alert("个人信息加载失败 , 请重新刷新尝试")
+                }
+            }
+        });
+    }
+
+    showInfo();
+
+    // 获取我的文章列表数据
+    function getMyArticleList() {
+        jQuery.ajax({
+            url: "/art/mylist",
+            type: "POST",
+            data: {},
+            success: function (result) {
+                if (result != null && result.code === 200) {
+                    // 两种情况 , 一种是用户没有文章, 一种是用户存在文章
+                    if (result.data != null && result.data.length > 0) {
+                        //此用户发表了文章
+                        let artDiv = "";
+                        for (var i = 0; i < result.data.length; i++) {
+                            let artItem = result.data[i];
+                            /*
+                                <!--  .blog就是一个博客 -->
+                                <div class="blog">
+                                    <!-- 标题 -->
+                                    <div class="title">我的第一篇博客</div>
+                                    <!-- 发布时间 -->
+                                    <div class="date">2023-3-24 11:11:00</div>
+                                    <!-- 摘要 -->
+                                    <div class="desc">文章</div>
+                                    <a href="blog_detail.html">查看全文 &gt;&gt; </a> &nbsp;&nbsp;
+                                    <a href="blog_detail.html">修改 &gt;&gt; </a>&nbsp;&nbsp;
+                                    <a href="blog_detail.html">删除 &gt;&gt; </a>&nbsp;&nbsp;
+                                </div>
+                            */
+                            artDiv += '<div class="blog">';
+                            artDiv += '<div class="title">' + artItem.title + '</div>';
+                            artDiv += '<div class="date">' + artItem.updatetime + '</div>';
+                            artDiv += '<div class="desc">' + artItem.content + '</div>';
+                            artDiv += '<a href="blog_detail.html?id=' + artItem.id + '">查看全文 &gt;&gt; </a> &nbsp;&nbsp;';
+                            artDiv += '<a href="blog_edit.html?id=' + artItem.id + '">修改 &gt;&gt; </a> &nbsp;&nbsp;';
+                            artDiv += '<a href="javascript:myDel(' + artItem.id + ')">删除 &gt;&gt; </a> &nbsp;&nbsp;';
+                            artDiv += '</div>';
+                        }
+                        jQuery('#artDiv').html(artDiv);
+
+                    } else {
+                        // 当前用户为没有发表过文章
+                        jQuery('#artDiv').html("<h3>暂时没有文章</h3>");
+                    }
+                } else {
+                    alert("错误, 请重试");
+                }
+            }
+        });
+    }
+
+    getMyArticleList();
+
+    function myDel(id) {
+        // 确认是否删除文章
+        if (confirm("是否要删除文章?")) {
+            jQuery.ajax({
+                url: "/art/delete",
+                type: "POST",
+                // 需要传入数据
+                data: {"id": id},
+                success: function (result) {
+                    // 删除一条信息成功
+                    if (result != null && result.data === 1) {
+                        alert("删除成功");
+                        location.href = location.href;
+                    } else {
+                        alert("删除失败");
+                    }
+                }
+            });
+        }
+    }
+
+    // 注销功能
+    function logout() {
+        if (confirm("确认是否要注销?")) {
+            jQuery.ajax({
+                url: "user/logout",
+                type: 'POST',
+                data: {},
+                success: function (result) {
+                    if (result != null && result.code === 1) {
+                        alert("注销成功");
+                        location.href = "/blog_login.html";
+                    } else {
+                        alert("注销失败");
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

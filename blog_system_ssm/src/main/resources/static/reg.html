@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" href="css/commen.css">
+    <link rel="stylesheet" href="css/blog_reg.css">
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+<div class="nav">
+    <img src="image/head.png" alt="">
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="myblog_list.html">主页</a>
+    <a href="blog_edit.html">写博客</a>
+</div>
+<div class="login-container">
+    <!-- 白色登录界面 -->
+    <div class="login-dialog">
+        <div>
+            <h3>登录</h3>
+            <div class="row">
+                <span>用户名</span>
+                <input type="text" id="userName">
+            </div>
+            <div class="row">
+                <span>密码 </span>
+                <input type="password" id="passWd">
+            </div>
+            <div class="row">
+                <span>确认密码 </span>
+                <input type="password" id="passWd2">
+            </div>
+            <div class="row">
+                <!--                <button>提交</button>-->
+                <button id="submit" onclick="mysub()">注册</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function mysub() {
+        // 1. 非空校验
+        var username = jQuery("#userName");
+        var passsword = jQuery("#passWd");
+        var password2 = jQuery("#passWd2")
+        if (username.val() === "") {
+            alert("请先输入用户名! ");
+            username.focus();
+            return;
+        }
+        if (passsword.val() === "") {
+            alert("请先输入密码! ");
+            passsword.focus();
+            return;
+        }
+        if (password2.val() === "") {
+            alert("请再一次输入密码! ");
+            password2.focus();
+            return;
+        }
+        // 2. 判断两次密码是否一致
+        if (passsword.val() !== password2.val()) {
+            alert("两次密码不一致, 请重新输入! ");
+            passsword.focus();
+            return;
+        }
+        // 3. Ajax 提交请求
+        jQuery.ajax({
+            url: "/user/reg",
+            type: "POST",
+            data: {
+                "username": username.val(), "password": passsword.val()
+            },
+            // result 从后端返回回来的结果
+            success: function (result) {
+                if (result != null && result.code === 200 && result.data === 1) {
+                    if (confirm("恭喜,注册成功, 是否需要跳转到登陆页面?")) {
+                        location.href = "/blog_login.html";
+                    }
+                } else {
+                    alert("执行失败, 请稍后再试");
+                }
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

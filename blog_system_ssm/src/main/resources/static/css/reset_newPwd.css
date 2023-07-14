@@ -1,0 +1,123 @@
+/*第一个界面的css*/
+
+.login-container {
+    width: 100%;
+    height: calc(100% - 50px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container .login-dialog {
+    width: 600px;
+    height: 500px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.login-container h3 {
+    text-align: center;
+    margin: 20px 0;
+    /*margin-bottom: 30px;*/
+    font-size: 30px;
+}
+
+.row {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    /* padding-right: 30px; */
+}
+
+#imgrow {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+#imgrow img {
+    /*display: block;*/
+
+    height: 100px;
+    width: 100px;
+    border-radius: 50px
+}
+
+#spanContent {
+    margin-top: -20px;
+}
+
+#spanContent span {
+    color: rgb(140, 146, 164);
+}
+
+#redback {
+    height: 40px;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    background-color: rgb(248, 83, 89);
+    border-radius: 10px;
+}
+
+#redback span {
+    font-size: 16px;
+    color: white;
+}
+
+/*第二个界面css*/
+#question {
+    height: 40px;
+    width: 300px;
+    line-height: 40px;
+    font-size: 22px;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+
+#answer {
+    height: 40px;
+    width: 300px;
+    line-height: 40px;
+    font-size: 22px;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+
+#resetPwd {
+    border-radius: 10px;
+    color: white;
+    font-size: 20px;
+    width: 300px;
+    height: 40px;
+    background-color: rgb(64, 80, 103);
+    /* border: none; */
+    outline: none;
+}
+
+/*第三个动态界面css*/
+#password {
+    height: 40px;
+    width: 300px;
+    line-height: 40px;
+    font-size: 22px;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+
+#confirmPwd {
+    height: 40px;
+    width: 300px;
+    line-height: 40px;
+    font-size: 22px;
+    padding-left: 10px;
+    border-radius: 10px;
+}

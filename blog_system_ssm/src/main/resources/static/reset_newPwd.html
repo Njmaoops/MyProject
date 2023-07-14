@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改密码页面</title>
+    <link rel="stylesheet" href="css/commen.css">
+    <link rel="stylesheet" href="css/reset_newPwd.css">
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+<div class="nav">
+    <img src="image/head.png" alt="">
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="reg.html">注册</a>
+    <a href="blog_list.html">主页</a>
+    <a href="blog_edit.html">写博客</a>
+</div>
+
+<div class="login-container">
+    <div class="login-dialog">
+        <div id="information">
+            <div class="row" id="imgrow">
+                <img src="image/head.png">
+            </div>
+            <h3 id="title">重置密码</h3>
+            <div class="row" id="spanContent">
+                <span>请通过输入用户名/安全问题重置你的博客账号密码</span>
+            </div>
+            <div id="red">
+
+            </div>
+            <div class="row">
+                <input id="question" placeholder="📫  用户名/安全问题">
+            </div>
+            <div class="row">
+                <button id="resetPwd" onclick="javascript:findQuestion()">重置密码</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function findQuestion() {
+        var question = jQuery("#question");
+        if (question.val() === "") {
+            jQuery("#red").html(
+                '<div class="row">' +
+                '<div id="redback">' +
+                '<span>该字段必填</span>' +
+                '</div>' +
+                '</div>'
+            )
+            return;
+        }
+        //如果不为空,获取信息返回给后端判断用户名对应的安全问题是否正确
+        jQuery.ajax({
+            url: "/user/findques",
+            type: "POST",
+            // 传给后端还需要判断是否是问题, 有可能是用户名
+            data: {"securityquestion": question.val()},
+            success: function (result) {
+                if (result != null) {
+                    if (result.code === -1) {
+                        jQuery("#red").html(
+                            '<div class="row">' +
+                            '<div id="redback">' +
+                            '<span>用户不存在</span>' +
+                            '</div>' +
+                            '</div>'
+                        )
+                        return;
+                    }
+                    // 说明通过信息查找到用户了
+                    if (result.code === 200) {
+                        // 开始通过信息构造前端
+                        jQuery('#information').html(
+                            '<div class="row" id="imgrow">\n' +
+                            '                <img src="image/head.png">\n' +
+                            '            </div>\n' +
+                            '            <h3 id="title">重置密码</h3>\n' +
+                            '            <div id="red">\n' +
+                            '\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '            <h3 id="question">' + result.data.securityquestion + '</h3>\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '                <input id="answer" placeholder="🔑 ">\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '                <button id="resetPwd" onclick="javascript:confirmAnswer(' + result.data.id + ')">确定</button>\n' +
+                            '            </div>'
+                        )
+                    }
+                }
+            }
+        });
+    }
+
+    // 获取确认用户信息是否正确
+    function confirmAnswer(id) {
+        let securityquestion = jQuery("#question");
+        let securityanswer = jQuery("#answer");
+        if (securityanswer.val() === "") {
+            jQuery("#red").html(
+                '<div class="row">' +
+                '<div id="redback">' +
+                '<span>该字段必填</span>' +
+                '</div>' +
+                '</div>'
+            )
+            securityanswer.focus();
+            return;
+        }
+        //开始向后端传递数据
+        jQuery.ajax({
+            url: "/user/confirmans",
+            type: "POST",
+            data: {"securityquestion": securityquestion.text(), "securityanswer": securityanswer.val()},
+            success: function (result) {
+                if (result != null) {
+                    if (result.code === -3) {
+                        jQuery("#red").html(
+                            '<div class="row">' +
+                            '<div id="redback">' +
+                            '<span>安全问题不对!</span>' +
+                            '</div>' +
+                            '</div>'
+                        )
+                    }
+                    if (result.code === 200) {
+                        // 说明可以进行修改密码了!
+                        jQuery('#information').html(
+                            '<div class="row" id="imgrow">\n' +
+                            '                <img src="image/head.png">\n' +
+                            '            </div>\n' +
+                            '            <h3 id="title">重置密码</h3>\n' +
+                            '            <div class="row" id="spanContent">\n' +
+                            '                <span>请输入新密码以重置博客账号密码</span>\n' +
+                            '            </div>\n' +
+                            '            <div id="red">\n' +
+                            '\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '                <input id="password" placeholder="🔒 新密码">\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '                <input id="confirmPwd" placeholder="🔒 再次输入新密码">\n' +
+                            '            </div>\n' +
+                            '            <div class="row">\n' +
+                            '                <button id="resetPwd" onclick="javascript:resetPassword(' + id + ')">重置密码</button>\n' +
+                            '            </div>'
+                        );
+                    }
+                }
+            }
+        });
+    }
+
+    function resetPassword(id) {
+        // 接收到后端传来的id信息
+        var newPassword = jQuery("#password");
+        var newPassword2 = jQuery("#confirmPwd");
+        if (newPassword.val() === '' || newPassword2.val() === '') {
+            jQuery("#red").html(
+                '<div class="row">' +
+                '<div id="redback">' +
+                '<span>该字段必填</span>' +
+                '</div>' +
+                '</div>'
+            );
+            return;
+        }
+        if (newPassword.val() !== newPassword2.val()) {
+            jQuery("#red").html(
+                '<div class="row">' +
+                '<div id="redback">' +
+                '<span>两次密码不一致</span>' +
+                '</div>' +
+                '</div>'
+            );
+            return;
+        }
+        jQuery.ajax({
+            url: "user/resetpwd",
+            type: "POST",
+            data: {"id": id, "password": newPassword.val()},
+            success: function (result) {
+                if (result != null) {
+                    if (result.code === 200) {
+                        alert("修改成功转跳页面");
+                        location.href = "blog_login.html";
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

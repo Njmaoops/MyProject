@@ -1,0 +1,40 @@
+# 数据库的连接配置
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/mycnblog?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+    # 驱动名字
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 配置redis
+  redis:
+    # redis数据库
+    database: 2
+    #连接端口
+    port: 6379
+    #ip地址
+    host: 47.96.131.90
+
+  # 会话存储位置
+  session:
+    store-type: redis
+    # 名字空间
+    redis:
+      namespace: spring:session
+      flush-mode: on_save
+#会话失效时间:
+server:
+  servlet:
+    session:
+      # (1800s)会话过期
+      timeout: 1800
+
+# Mybatis xml 保存路径
+mybatis:
+  mapper-locations: classpath:mapper/**Mapper.xml
+  # 配置打印 Mybatis 执行的sql
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com.example.ssmdemo: debug

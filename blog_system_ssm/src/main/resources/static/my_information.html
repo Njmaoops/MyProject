@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息页面</title>
+    <link rel="stylesheet" href="css/commen.css">
+    <link rel="stylesheet" href="css/my_information.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/common.js"></script>
+</head>
+<body>
+<div class="nav">
+    <a href="my_information.html">
+        <img src="image/head.png" alt="">
+    </a>
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="myblog_list.html">主页</a>
+    <a href="javascript:logout()">注销</a>
+</div>
+<div class="container">
+    <div class="left">
+        <!-- 表示左侧的用户信息区域 -->
+        <div class="card">
+            <img src="image/head2.png" alt="">
+            <h3 class="nickName"></h3>
+            <div class="row" id="information">
+                <span>个人资料</span>
+            </div>
+        </div>
+    </div>
+    <div class="right">
+        <div class="right-row">
+            <!--用户名-->
+            <h3 id="userName">用户名 :</h3>
+        </div>
+        <div class="right-row">
+            <!--昵称-->
+            <span>昵称: </span>
+            <!--            后面需要修改一下, 因为是动态的,placeholder内的值是从后端传过来的-->
+            <div id="nickName">
+
+            </div>
+
+            <button onclick="chNickName()">确定</button>
+        </div>
+        <div class="right-row">
+            <!--密码-->
+            <span>密码: </span>
+            <div id="password">
+
+            </div>
+            <button onclick="chPassword()">确定</button>
+        </div>
+        <div class="right-row">
+            <span>新密码: </span>
+            <div id="newPassword">
+                <input type="password" placeholder="如果不修改密码不进行填写">
+            </div>
+            <button onclick="" class="transparent-pattern"></button>
+        </div>
+        <div class="right-row">
+            <span>确认新密码: </span>
+            <div id="newPassword2">
+                <input type="password" placeholder="确认新密码">
+            </div>
+            <button onclick="" class="transparent-pattern"></button>
+        </div>
+        <div class="right-row">
+            <!--安全问题-->
+            <span>安全问题: </span>
+            <div id="security-ques">
+
+            </div>
+            <button onclick="chSecurityQues()">确定</button>
+        </div>
+        <div class="right-row">
+            <!--安全问题答案-->
+            <span>答案: </span>
+            <div id="security-answer">
+
+            </div>
+            <button onclick="" class="transparent-pattern"></button>
+        </div>
+        <div class="right-row" id="right-space">
+
+        </div>
+        <div class="right-row">
+            <button onclick="saveAll()">保存设置</button>
+        </div>
+        <script>
+            // 先获取用户的信息, 并打印到页面上
+            // 需要定义一个外部的 id 变量, 后续修改使用
+            let uid;
+
+            function showInfo() {
+                jQuery.ajax({
+                    url: "/user/information",
+                    type: "POST",
+                    data: {},
+                    success: function (result) {
+                        if (result != null && result.code === 200) {
+                            // 说明登录成功
+                            jQuery("#userName").text("用户名: " + result.data.username);
+                            // 构造昵称
+                            jQuery("#nickName").html('<input type="text" value=' + result.data.nickname + ' >');
+                            // 构造密码
+                            jQuery("#password").html('<input type="text" placeholder="想要修改密码请输入原密码" >');
+                            // 构造安全问题
+                            jQuery("#security-ques").html('<input type="text" value=' + result.data.securityquestion + '>');
+                            // 构造安全问题答案
+                            jQuery("#security-answer").html('<input type="text" value=' + result.data.securityanswer + '>');
+                            uid = result.data.id;
+                        } else {
+                            alert("用户暂未登录,请重试!")
+                        }
+                    }
+                });
+            }
+
+            showInfo();
+
+
+            //修改请求
+            function chNickName() {
+                var nickname = jQuery("#nickName input");
+                if (nickname.val() === "") {
+                    alert("昵称不能为空");
+                    nickname.focus();
+                }
+                jQuery.ajax({
+                    url: "user/chnickname",
+                    type: "POST",
+                    data: {"nickname": nickname.val()},
+                    success: function (result) {
+                        if (result != null && result.code === -2) {
+                            alert(result.msg);
+                        }
+                        if (result != null && result.code === 200 && result.data === 1) {
+                            alert("昵称修改成功");
+                            location.href = location.href;
+                        }
+                    }
+                });
+            }
+
+            var newPassword = jQuery("#newPassword input");
+            var newPassword2 = jQuery("#newPassword2 input");
+
+            function chPassword() {
+                var password = jQuery("#password input");
+                // 1. 先判断密码原来密码是否输入了
+                if (password.val() === "") {
+                    alert("请输入密码!");
+                    password.focus();
+                }
+                if (newPassword.val() === "") {
+                    alert("输入新的密码")
+                    newPassword.focus();
+                }
+                if (newPassword2.val() === "") {
+                    alert("输入新的密码")
+                    newPassword2.focus();
+                }
+                if (newPassword.val() !== newPassword2.val()) {
+                    alert("两次密码不一致,请确认后在进行修改!");
+                    newPassword.focus();
+                }
+
+                jQuery.ajax({
+                    url: "user/chpassword",
+                    type: "POST",
+                    data: {"password": password.val(), "newPassword": newPassword.val(), "id": uid},
+                    success: function (result) {
+                        // 如果成功之后 判断是否和数据库中的密码相同, 如果相同就进行修改密码操作
+                        if (result != null && result.code === -2) {
+                            alert(result.msg);
+                        }
+                        if (result != null && result.code === 200 && result.data === 1) {
+                            alert("修改密码成功!请重新登录!");
+                            location.href = "blog_login.html";
+                        }
+                    }
+                });
+            }
+
+            function chSecurityQues() {
+                var securityQues = jQuery("#security-ques input");
+                if (securityQues.val() === "") {
+                    alert("请输入你的安全问题!");
+                    securityQues.focus();
+                }
+                var securityAns = jQuery("#security-answer input")
+                if (securityAns.val() === "") {
+                    alert("请输入你安全问题的答案!");
+                    securityAns.focus();
+                }
+                jQuery.ajax({
+                    url: "/user/setsecurity",
+                    type: "POST",
+                    data: {"securityquestion": securityQues.val(), "securityanswer": securityAns.val()},
+                    success: function (result) {
+                        if (result != null && result.code === 200 && result.data === 1) {
+                            alert("安全问题修改成功!");
+                            location.href = location.href;
+                        }
+                        if (result != null && result.code === -1) {
+                            alert("非法请求")
+                        }
+                    }
+                });
+            }
+
+
+            // 保存所有修改设置
+            function saveAll() {
+                var nickname = jQuery("#nickName input");
+                var password = jQuery("#password input");
+                var securityQues = jQuery("#security-ques input");
+                var securityAns = jQuery("#security-answer input");
+                if (nickname.val() === "") {
+                    alert("昵称不能为空");
+                    nickname.focus();
+                }
+                if (password.val() === "") {
+                    alert("请输入密码!");
+                    password.focus();
+                }
+                if (newPassword.val() === "") {
+                    alert("输入新的密码")
+                    newPassword.focus();
+                }
+                if (newPassword2.val() === "") {
+                    alert("输入新的密码")
+                    newPassword2.focus();
+                }
+                if (newPassword.val() !== newPassword2.val()) {
+                    alert("两次密码不一致,请确认后在进行修改!");
+                    newPassword.focus();
+                }
+                if (securityQues.val() === "") {
+                    alert("请输入你的安全问题!");
+                    securityQues.focus();
+                }
+                if (securityAns.val() === "") {
+                    alert("请输入你安全问题的答案!");
+                    securityAns.focus();
+                }
+                //
+                jQuery.ajax({
+                    url: "/user/setall",
+                    type: "POST",
+                    data: {
+                        "nickname": nickname.val(),
+                        "password": password.val(),
+                        "newPassword": newPassword.val(),
+                        "id": uid,
+                        "securityquestion": securityQues.val(),
+                        "securityanswer": securityAns.val()
+                    },
+                    success: function (result) {
+                        if (result != null) {
+                            if (result.code === 200 && result.data === 1) {
+                                alert("修改成功");
+                                location.href = location.href;
+                            }
+                            if (result.code === -1 && result.code === -2) {
+                                alert(result.msg);
+                            }
+                        }
+                    }
+                });
+
+
+            }
+        </script>
+    </div>
+</div>
+
+</body>

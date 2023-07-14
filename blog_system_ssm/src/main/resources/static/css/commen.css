@@ -1,0 +1,108 @@
+/* 放置各个页面都会使用的公共样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* 给整个页面加上背景图 */
+/* html 的父元素 ,就是浏览器的窗口 */
+html, body {
+    /* 此处就是 html 父元素也就是浏览器窗口, 
+    此处的100% 就是 html元素的高度和浏览器窗口一样高
+    body 的父元素, 100 % 就是和 body元素的高 */
+    height: 100%;
+}
+body {
+    background-image: url(../image/bgground.jpg);
+    background-repeat: no-repeat ;
+    background-position: center center;
+    background-size: cover;
+}  
+.nav {
+    width: 100%;
+    /* 详细尺寸,标注清楚*/
+    height: 50px;
+    background-color: rgba(51, 51, 51, 0.4);
+    color : white;
+    /* 导航栏需要横向布局 */
+    display: flex;
+    /* 需要垂直居中 */
+    align-items: center;
+
+}
+.nav img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 30px;
+    margin-right: 10px;
+}
+.nav .space {
+    width: 80%;
+}
+.nav a{
+    color: white;
+    text-decoration: none;
+    padding: 0 15px;
+}
+/* 版心样式 */
+.container{
+    /* 当前版心设置为固定宽度就好 */
+    width: 1700px;
+    /* 不然会高出50像素, 因为导航栏高度为50px */
+    height:calc(100% - 50px);
+    /* 水平居中 */
+    margin: 0 auto ;
+    /* 需要加上弹性布局, 不然left 和 right 独占一行 */
+    display: flex;
+    justify-content: space-between;
+}
+.container .left {
+    width: 300px;
+    height: 100%;
+    /* background-color: bisque; */
+}
+.container .right {
+    width: 1370px;
+    /* background-color: aquamarine; */
+    height: calc(100% - 50px);
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    margin-top: 50px;
+    /* 相当于是如果内容满了 那么就在right 内部出现一个滚动条 没有满就不会出现 */
+    overflow: auto;
+}
+/* 左侧卡片信息*/
+.card {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 5%;
+    height: 500px;
+    /* 通过内边距 让头像变成居中 */
+    padding: 50px;
+    padding-top: 30px;
+    /* 让卡片上边距调整一下 */
+    margin-top: 50px;
+}
+.card img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+.card h3{
+    text-align: center;
+    padding: 10px;
+    padding-bottom: 15px;
+}
+.card a {
+    /* 变成块级元素才可以进行调整 行内元素多边距.. */
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: rgba(51, 51, 51, 0.4);
+    padding: 5px;
+}
+.card .counter {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}

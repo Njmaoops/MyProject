@@ -1,0 +1,64 @@
+.card {
+    height: 550px;
+    width: 300px;
+    border-radius: 20px;
+}
+
+.row {
+    /*让span标签在中间*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 120px;
+    height: 50px;
+    margin: 40px;
+}
+
+
+.right-row {
+    width: auto;
+    height: 50px;
+    margin-left: 30px;
+    margin-top: 30px;
+
+    /*    居中元素*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#information {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+}
+
+#nickName input, #password input, #security-answer input, #security-ques input, #newPassword input, #newPassword2 input {
+    height: 40px;
+    width: 300px;
+    line-height: 40px;
+    font-size: 22px;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+
+.right-row span {
+    display: block;
+    width: 100px;
+    font-weight: 700;
+}
+
+.right-row button {
+    border-radius: 5px;
+    color: antiquewhite;
+    margin-left: 30px;
+    width: 80px;
+    height: 40px;
+    background-color: rgb(64, 80, 103);
+}
+
+.transparent-pattern {
+    opacity: 0;
+}
+

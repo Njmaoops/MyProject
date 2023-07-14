@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客详情页</title>
+    <link rel="stylesheet" href="css/commen.css">
+    <link rel="stylesheet" href="css/blog_detail.css">
+    <!-- editor.md 的依赖 -->
+    <link rel="stylesheet" href="editor.md/css/editormd.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="editor.md/lib/marked.min.js"></script>
+    <script src="editor.md/editormd.js"></script>
+    <script src="js/common.js"></script>
+</head>
+<body>
+<div class="nav">
+    <a href="my_information.html">
+        <img src="image/head.png" alt="">
+    </a>
+    <span>我的博客系统</span>
+    <!-- 占位盒子 -->
+    <div class="space"></div>
+    <a href="myblog_list.html">主页</a>
+    <a href="blog_edit.html">写博客</a>
+    <a href="logout">注销</a>
+</div>
+<!-- .container 作为页面的版心 -->
+<div class="container">
+    <div class="left">
+        <!-- 表示左侧的用户信息区域 -->
+        <div class="card">
+            <img src="image/head2.png" alt="">
+            <h3 id="userName"></h3>
+            <a href="https://gitee.com/zhang-haoxiang135">github 地址</a>
+            <div class="counter">
+                <span>文章</span>
+                <span>分类</span>
+            </div>
+            <div class="counter">
+                <span id="articleCount"></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <div class="right">
+        <!--  .blog就是一个博客 -->
+        <div class="blog-content">
+            <!-- 博客标题 -->
+            <h3 id="title"></h3>
+            <div class="date">发布时间:
+                <span id="updatetime"></span> &nbsp;&nbsp;
+                阅读量<span id="rcount"></span>
+            </div>
+            <!--                因为editormd.min.css内部会自动加一个白色的背景 , 想要透明就需要把该背景改成none -->
+            <div id="content" style="background:none">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var editormd;
+
+    function initEdit(md) {
+        editormd = editormd.markdownToHTML("content", {
+            markdown: md,
+        });
+    }
+
+    function getArtDetail(id) {
+        if (id === "") {
+            alert("非法参数");
+        }
+        jQuery.ajax({
+            url: 'art/detail',
+            type: "POST",
+            data: {"id": id},
+            success: function (result) {
+                if (result != null && result.code === 200) {
+                    jQuery('#title').html(result.data.title);
+                    jQuery('#updatetime').html(result.data.updatetime);
+                    jQuery('#rcount').html(result.data.rcount);
+                    // 通过文章id 获得到 用户的id , 再通过用户id 来展示用户属性
+                    showUser(result.data.uid);
+                    // 将内容转成markdown格式
+                    initEdit(result.data.content);
+                } else {
+                    alert("查询失败, 请重试!");
+                }
+            }
+        });
+    }
+
+    // getURLValue的方法就是 获取id 所对应的value值, 如果没有找到 , 那么就会返回 "";
+    getArtDetail(getUrlValue("id"));
+
+    //通过文章的uid 获得用户信息
+    function showUser(id) {
+        if (id === "") {
+            alert("id为非法参数,请重试");
+        }
+        jQuery.ajax({
+            url: "user/getuserbyid",
+            type: "POST",
+            data: {"id": id},
+            success: function (result) {
+                // 还需要判断id的合法性
+                if (result != null && result.code === 200 && result.data.id > 0) {
+                    jQuery("#userName").html(result.data.username);
+                    jQuery("#articleCount").html(result.data.articleCount);
+                } else {
+                    alert("查询用户失败!");
+                }
+            }
+
+        });
+    }
+
+    // 访问的时候进行阅读量 + 1
+    function updateRCount() {
+        let id = getUrlValue("id");
+        if (id !== "") {
+            jQuery.ajax({
+                url: "/art/rcount",
+                type: "POST",
+                // 文章id
+                data: {"id": id},
+                success: function (result) {
+                    // 这里选择直接返回rcount, 不再是一个对象
+                    jQuery("#rcount").html(result.data);
+                }
+            });
+        }
+    }
+
+    // 每次访问detail这个页面, 该函数都会调用一次, rcount 每次都会 + 1;
+    updateRCount();
+</script>
+
+</body>
+</html>
